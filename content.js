@@ -43,4 +43,4 @@ setInterval(function(){
         $.getScript('https://bot-ao.com/insert_stats3.php?data='+JSON.stringify(this));
     });
 
-},60*1000);
+},30*1000);
