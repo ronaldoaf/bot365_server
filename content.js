@@ -1,6 +1,9 @@
 setInterval(function(){
     var a=[];
     $('tr[data-match_id]').each(function(){
+        var minuto=$(this).find('.match_status_minutes').text();
+        if(minuto!='Half') return;
+		
         var id=$(this).attr('data-match_id');
         var liga_id=$(this).attr('data-league_id');
         var home=$(this).find('.match_home a').text().split("'").join('');
@@ -9,6 +12,15 @@ setInterval(function(){
         var corners_half=$(this).find('.span_half_corner').eq(0).text().replace('(','').replace(')','').split('-');
         var da=$(this).find('.match_dangerous_attacks_half_div').text().split(' - ');
         var shoots=$(this).find('.match_shoot_half_div').text().split(' - ');
+		
+		if ($(this).find('.match_handicap').text().split('(').length==2){
+			var handicap=Number($(this).find('.match_handicap').text().split('(')[1].split(')')[0]);
+		} 
+		else{
+			var handicap=Number($(this).find('.match_handicap').text());
+		}
+		
+		
         try {
             var sr=$(this).find('img[src="/img/red_card.png"]').filter(function(){ return ( Number($(this).parent().attr('style').match(/[0-9]+/g)[0])<=50 )  }).size();
 
@@ -16,9 +28,7 @@ setInterval(function(){
         catch(err) {
             var sr=0;
         }
-        var minuto=$(this).find('.match_status_minutes').text();
 
-        if(minuto!='Half') return;
 
         a.push({
             id: Number(id),
@@ -33,7 +43,8 @@ setInterval(function(){
             daa: Number(da[1]),
             sh: Number(shoots[0]),
             sa: Number(shoots[1]),
-            sr: Number(sr)
+            sr: Number(sr),
+			handicap: handicap
         });
     });
     var arrays = [], size = 10;
