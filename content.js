@@ -19,8 +19,12 @@ jQuery.fn.extend({
 });
  
 
+ 
 setInterval(function(){
    $('a:contains(live version)').click();
+	
+	
+	var timestamp=(new Date).toISOString().split('.')[0].split('T').join(' ');
 	
     var a=[];
     $('tr[data-match_id]').each(function(){
@@ -29,8 +33,8 @@ setInterval(function(){
 		
         var id=$(this).attr('data-match_id');
         var liga_id=$(this).attr('data-league_id');
-        var home=$(this).find('.match_home a').text().split("'").join('');
-        var away=$(this).find('.match_away a').text().split("'").join('');
+        var home=$(this).find('.match_home a').text().split("'").join('').split(",").join('');
+        var away=$(this).find('.match_away a').text().split("'").join('').split(",").join('');
         var placar=$(this).find('.match_goal').text().split(' - ');
         var corners_half=$(this).find('.span_half_corner').eq(0).text().replace('(','').replace(')','').split('-');
         var da=$(this).find('.match_dangerous_attacks_half_div').text().split(' - ');
@@ -51,23 +55,29 @@ setInterval(function(){
         catch(err) {
             var sr=0;
         }
-
-
+		
+        
+		
+        $linha['R']= (strpos($linha['home'], 'Reserves') !== false) ? 1 : 0;
         a.push({
             id: Number(id),
             minuto:minuto,
             home: home,
             away: away,
-            gh: Number(placar[0]),
-            ga: Number(placar[1]),
-            ch: Number(corners_half[0]),
-            ca: Number(corners_half[1]),
-            dah: Number(da[0]),
-            daa: Number(da[1]),
-            sh: Number(shoots[0]),
-            sa: Number(shoots[1]),
+            gH: Number(placar[0]),
+            gA: Number(placar[1]),
+            cF: Number(corners_half[0]),
+            cA: Number(corners_half[1]),
+            daH: Number(da[0]),
+            daA: Number(da[1]),
+            sH: Number(shoots[0]),
+            sH: Number(shoots[1]),
             sr: Number(sr),
-			handicap: handicap
+			handicap: handicap,
+			W: Number( home.includes('Women') ),
+			R: Number( home.includes('Reserves') ),
+			timestamp: timestamp
+			
         });
     });
     var arrays = [], size = 10;
@@ -77,4 +87,4 @@ setInterval(function(){
         $.getScript('https://bot-ao.com/insert_stats3.php?data='+JSON.stringify(this));
     });
 
-},30*1000);
+},15*1000);
