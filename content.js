@@ -20,9 +20,17 @@ jQuery.fn.extend({
  
  
  
+ var pause=false;
+ 
  
 function finished(){
-	$.get('https://www.totalcorner.com/match/today/ended', function(res){
+    $.ajax({ url  : 'https://www.totalcorner.com/match/today/ended' }).done(function(res, statusText, xhr){
+		
+		if (xhr.status==429){
+			pause=true;
+			return;
+		}
+
 		const data=(new Date).toISOString().split('T')[0];
 		const obj=[];
 		$(res).find('tr[data-match_id]').each(function(){
@@ -94,8 +102,8 @@ function finished(){
 	
 }
 
- 
-setInterval(function(){
+
+function inplay(){
    $('a:contains(live version)').click();
 	
 	
@@ -160,21 +168,122 @@ setInterval(function(){
     $(arrays).each(function(){
         $.getScript('https://bot-ao.com/insert_stats3.php?data='+JSON.stringify(this));
     });
-
-},15*1000);
-
-
+	
+}
 
 
 
 
 
-//Atualiza os jogos finalizados
+function getOdds(jogo_id){
+	if (pause) return; 
+	
+	function ajustaHandicap(str){
+		var arr=str.split(',');
+		if (arr.length==1) arr[1]=arr[0];
+		return (Number(arr[0])+ Number(arr[1]))/2.0;
+		
+	}
+	
+    var obj={};
+    $.ajax({ url  : 'https://bot-ao.com/half/select_odds.php' }).done(function(res, statusText, xhr){
+		
+		if (xhr.status==429){
+			pause=true;
+			return;
+		}
+		
+        var tr=$(res).find("#goals_full tr:contains(half):last");
+        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(45 '):last");
+        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(44 '):last");
+        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(43 '):last");
+        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(42 '):last");
+        obj={
+            jogo_id: Number(jogo_id),
+            data_inicio: $(res).find('#match_title_div small').text(),
+            gh: Number(tr.find('td:eq(1)').text().split(' - ')[0]),
+            ga: Number(tr.find('td:eq(1)').text().split(' - ')[1]),
+            oo: Number(tr.find('td:eq(2)').text()),
+            goalline: ajustaHandicap(tr.find('td:eq(3)').text()),
+            ou: Number(tr.find('td:eq(4)').text())
+        };
+        var tr=$(res).find("#handicap_full tr:contains(half):last");
+        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(45 '):last");
+        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(44 '):last");
+        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(43 '):last");
+        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(42 '):last");
+        obj.oh=Number(tr.find('td:eq(2)').text());
+        obj.handicap=ajustaHandicap(tr.find('td:eq(3)').text());
+        obj.oa=Number(tr.find('td:eq(4)').text());  
+        
+        
+        
+        $.ajax({
+            type: 'POST',
+            url: 'https://bot-ao.com/half/insert_odds.php',
+            data: JSON.stringify (obj),
+            success: function(data) {  
+                console.log(data)
+            },
+            contentType: "application/json",
+            dataType: 'json'
+        });    
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+//Atualiza as stats inplay a cada 15 segundos
+setInterval(inplay,15*1000);
+
+
+
+
+//Atualiza os jogos finalizados a cada 5 minutos
 setInterval(finished, 5*60*100);
 
 
 
+//Recarrega a página a cada 15 minutos
+setInterval(location.reload,15*60*1000);
 
+
+
+var get_odds_ligado=true;
+
+//Carrega as odds dos jogos passados a cada 5 segundos
+setInterval(function(){
+    if (get_odds_ligado==false) return;
+
+    $.get('https://bot-ao.com/half/select_odds.php', function(jogo_id){
+        if(jogo_id=='0') get_odds_ligado=false;
+        getOdds(jogo_id);   
+    });
+},5*1000);
+
+
+
+
+
+
+//A cada 5 minutos se estiver pausado reinicia página
+setInterval(function(){
+	if(pause) location.reload();
+},5*60*1000)
 
 
 
