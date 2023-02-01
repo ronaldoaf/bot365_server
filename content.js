@@ -258,8 +258,8 @@ setInterval(finished, 5*60*100);
 
 
 
-//Recarrega a página a cada 15 minutos
-setInterval(location.reload,15*60*1000);
+//Recarrega a página a cada 20 minutos
+setInterval(()=>location.reload(),20*60*1000);
 
 
 
