@@ -186,49 +186,53 @@ function getOdds(jogo_id){
 	}
 	
     var obj={};
-    $.ajax({ url  : 'https://bot-ao.com/half/select_odds.php' }).done(function(res, statusText, xhr){
+    $.ajax({ url  : 'https://bot-ao.com/half/select_odds.php' }).done(function(res1, statusText, xhr){
 		
 		if (xhr.status==429){
 			pause=true;
 			return;
 		}
 		
-        var tr=$(res).find("#goals_full tr:contains(half):last");
-        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(45 '):last");
-        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(44 '):last");
-        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(43 '):last");
-        if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(42 '):last");
-        obj={
-            jogo_id: Number(jogo_id),
-            data_inicio: $(res).find('#match_title_div small').text(),
-            gh: Number(tr.find('td:eq(1)').text().split(' - ')[0]),
-            ga: Number(tr.find('td:eq(1)').text().split(' - ')[1]),
-            oo: Number(tr.find('td:eq(2)').text()),
-            goalline: ajustaHandicap(tr.find('td:eq(3)').text()),
-            ou: Number(tr.find('td:eq(4)').text())
-        };
-        var tr=$(res).find("#handicap_full tr:contains(half):last");
-        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(45 '):last");
-        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(44 '):last");
-        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(43 '):last");
-        if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(42 '):last");
-        obj.oh=Number(tr.find('td:eq(2)').text());
-        obj.handicap=ajustaHandicap(tr.find('td:eq(3)').text());
-        obj.oa=Number(tr.find('td:eq(4)').text());  
-        
-        
-        
-        $.ajax({
-            type: 'POST',
-            url: 'https://bot-ao.com/half/insert_odds.php',
-            data: JSON.stringify (obj),
-            success: function(data) {  
-                console.log(data)
-            },
-            contentType: "application/json",
-            dataType: 'json'
-        });    
-    });
+		$.get('https://www.totalcorner.com/match/odds-handicap/'+jogo_id, function(res){
+		
+			var tr=$(res).find("#goals_full tr:contains(half):last");
+			if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(45 '):last");
+			if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(44 '):last");
+			if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(43 '):last");
+			if (tr.size()==0) tr=$(res).find("#goals_full tr:contains(42 '):last");
+			obj={
+				jogo_id: Number(jogo_id),
+				data_inicio: $(res).find('#match_title_div small').text(),
+				gh: Number(tr.find('td:eq(1)').text().split(' - ')[0]),
+				ga: Number(tr.find('td:eq(1)').text().split(' - ')[1]),
+				oo: Number(tr.find('td:eq(2)').text()),
+				goalline: ajustaHandicap(tr.find('td:eq(3)').text()),
+				ou: Number(tr.find('td:eq(4)').text())
+			};
+			var tr=$(res).find("#handicap_full tr:contains(half):last");
+			if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(45 '):last");
+			if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(44 '):last");
+			if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(43 '):last");
+			if (tr.size()==0) tr=$(res).find("#handicap_full tr:contains(42 '):last");
+			obj.oh=Number(tr.find('td:eq(2)').text());
+			obj.handicap=ajustaHandicap(tr.find('td:eq(3)').text());
+			obj.oa=Number(tr.find('td:eq(4)').text());  
+			
+			
+			
+			$.ajax({
+				type: 'POST',
+				url: 'https://bot-ao.com/half/insert_odds.php',
+				data: JSON.stringify (obj),
+				success: function(data) {  
+					console.log(data)
+				},
+				contentType: "application/json",
+				dataType: 'json'
+			});    
+		});
+	
+	})
 }
 
 
