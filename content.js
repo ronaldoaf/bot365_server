@@ -122,14 +122,18 @@ function inplay(){
         var corners_half=$(this).find('.span_half_corner').eq(0).text().replace('(','').replace(')','').split('-');
         var da=$(this).find('.match_dangerous_attacks_half_div').text().split(' - ');
         var shoots=$(this).find('.match_shoot_half_div').text().split(' - ');
+        
+        var gl_0=Number($(this).find('.match_total_goal_div').text().split(' ')[0]);
 		
 		if ($(this).find('.match_handicap').text().split('(').length==2){
 			var handicap=Number($(this).find('.match_handicap').text().split('(')[1].split(')')[0]);
+            var ah_0=Number($(this).find('.match_handicap').text().split(' ')[0] );
 		} 
 		else{
 			var handicap=Number($(this).find('.match_handicap').text());
+            var ah_0=handicap;
 		}
-		
+
 		
         try {
             var sr=$(this).find('img[src="/img/red_card.png"]').filter(function(){ return ( Number($(this).parent().attr('style').match(/[0-9]+/g)[0])<=50 )  }).size();
@@ -158,6 +162,8 @@ function inplay(){
 			handicap: handicap,
 			W: Number( home.includes('Women') ),
 			R: Number( home.includes('Reserves') ),
+            gl_0: gl_0, 
+            ah_0: ah_0,
 			timestamp: timestamp
 			
         });
