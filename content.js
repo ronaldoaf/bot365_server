@@ -45,11 +45,15 @@ function finished(){
 			const da=$(this).find('.match_dangerous_attacks_half_div').text().split(' - ');
 			const shoots=$(this).find('.match_shoot_half_div').text().split(' - ');
 			
+            var gl_0=Number($(this).find('.match_total_goal_div').text().split(' ')[0]);
+            
 			if ($(this).find('.match_handicap').text().split('(').length==2){
 				var handicap=Number($(this).find('.match_handicap').text().split('(')[1].split(')')[0]);
+                var ah_0=Number($(this).find('.match_handicap').text().split(' ')[0] );
 			} 
 			else{
 				var handicap=Number($(this).find('.match_handicap').text());
+                var ah_0=handicap;
 			}
 			
 			
@@ -78,6 +82,8 @@ function finished(){
 				sh: Number(shoots[0]),
 				sa: Number(shoots[1]),
 				sr: Number(sr),
+                gl_0: gl_0, 
+                ah_0: ah_0,
 				data_page:data.split('-').join('')
 			});
 			
