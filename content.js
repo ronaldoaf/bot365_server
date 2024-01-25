@@ -270,12 +270,12 @@ setInterval(inplay,15*1000);
 
 
 //Atualiza os jogos finalizados a cada 5 minutos
-setInterval(finished, 5*60*100);
+//setInterval(finished, 3*60*100);
+finished();
 
 
-
-//Recarrega a página a cada 20 minutos
-setInterval(()=>location.reload(),20*60*1000);
+//Recarrega a página a cada 5 minutos
+setInterval(()=>location.reload(),5*60*1000);
 
 
 
@@ -295,11 +295,12 @@ setInterval(function(){
 
 
 
-
+/*
 //A cada 5 minutos se estiver pausado reinicia página
 setInterval(function(){
 	if(pause) location.reload();
 },5*60*1000)
 
+*/
 
 
